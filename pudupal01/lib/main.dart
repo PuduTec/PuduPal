@@ -69,6 +69,7 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   String instruction = "";
   final controller = Completer<WebViewController>();
+  var loadingPercentage = 0;
   final js = '''
 function currentView() {
     let url = window.location.host
@@ -107,21 +108,36 @@ CurrentViewChannel.postMessage(currentView())
             appBar: AppBar(
               title: Text(widget.pagina.name),
             ),
-            body: Column(
+            body: Stack(
               children: [
                 Expanded(
                   child: WebView(
                     initialUrl: widget.pagina.url,
                     javascriptMode: JavascriptMode.unrestricted,
+                    javascriptChannels: _createJavascriptChannels(context),
                     onWebViewCreated: (webViewController) {
                       controller.complete(webViewController);
                     },
+                    onPageStarted: (url) {
+                      setState(() {
+                        loadingPercentage = 0;
+                      });
+                    },
+                    onProgress: (progress) {
+                      setState(() {
+                        loadingPercentage = progress;
+                      });
+                    },
                     onPageFinished: (url) async {
+                      loadingPercentage = 100;
                       await futureController.data!.runJavascript(js);
                     },
-                    javascriptChannels: _createJavascriptChannels(context),
                   ),
                 ),
+                if (loadingPercentage < 100)
+                  LinearProgressIndicator(
+                    value: loadingPercentage / 100.0,
+                  ),
                 Positioned(
                   bottom: 0.0,
                   left: 0.0,
