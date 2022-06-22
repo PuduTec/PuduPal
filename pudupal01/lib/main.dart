@@ -70,24 +70,29 @@ class DetailScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-              child: WebView(
-            initialUrl: pagina.url,
-            javascriptMode: JavascriptMode.unrestricted,
-          )),
+            child: WebView(
+              initialUrl: pagina.url,
+              javascriptMode: JavascriptMode.unrestricted,
+            ),
+          ),
           Positioned(
             bottom: 0.0,
             left: 0.0,
             right: 0.0,
             child: Container(
-                height: 90,
-                decoration:
-                    BoxDecoration(color: Colors.white, boxShadow: <BoxShadow>[
+              height: 90,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: <BoxShadow>[
                   BoxShadow(
-                      offset: const Offset(0.0, -0.5),
-                      color: Colors.black.withAlpha(30),
-                      blurRadius: 10.0),
-                ])),
-          )
+                    offset: const Offset(0.0, -0.5),
+                    color: Colors.black.withAlpha(30),
+                    blurRadius: 10.0,
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
