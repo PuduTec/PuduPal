@@ -128,6 +128,7 @@ CurrentViewChannel.postMessage(currentView())
                   right: 0.0,
                   child: Container(
                     height: 90,
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       boxShadow: <BoxShadow>[
@@ -138,7 +139,7 @@ CurrentViewChannel.postMessage(currentView())
                         ),
                       ],
                     ),
-                    child: Expanded(child: Text(instruction)),
+                    child: Text(instruction),
                   ),
                 ),
               ],
