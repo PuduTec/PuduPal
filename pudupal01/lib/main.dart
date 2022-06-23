@@ -76,24 +76,31 @@ ViewEnum =  {
     InicioSesionCarnet: "Inicio de sesión con carnet",
     InicioSesionClaveUnica: "Inicio de sesión con Clave Única",
     InicioSesionCorreo: "Inicio de sesión con correo",
+    Dashboard: "Descarga de pase movilidad",
     NoSePuedeDeterminar: "No se pude determinar la vista :("
 }
 
 function currentView() {
     let url = window.location.host
     if (url === "mevacuno.gob.cl") {
-        let popup_carnet = document.getElementsByClassName("popup-backdrop")[0]
-        if (popup_carnet.classList.contains("backdrop-in")) {
-            return ViewEnum.InicioSesionCarnet
-        }
-        else {
-            let active_tab = document.getElementsByClassName("toolbar-inner")[0].children[0]
-            if (active_tab.classList.contains("tab-link-active")) {
-                return ViewEnum.InicioSesion
+        let loggedIn = document.getElementById("my-login-screen").style.display === "none"
+        if (!loggedIn) {
+            let popup_carnet = document.getElementsByClassName("popup-backdrop")[0]
+            if (popup_carnet.classList.contains("backdrop-in")) {
+                return ViewEnum.InicioSesionCarnet
             }
             else {
-                return ViewEnum.InicioSesionCorreo
+                let active_tab = document.getElementsByClassName("toolbar-inner")[0].children[0]
+                if (active_tab.classList.contains("tab-link-active")) {
+                    return ViewEnum.InicioSesion
+                }
+                else {
+                    return ViewEnum.InicioSesionCorreo
+                }
             }
+        }
+        else {
+            return ViewEnum.Dashboard
         }
     }
     else if (url === "accounts.claveunica.gob.cl") {
@@ -155,26 +162,33 @@ function highlightElements(currentView) {
         input.style.outline = "3px solid red"
         input.style.outlineOffset = "-5px"
     }
+    else if (currentView === ViewEnum.InicioSesionClaveUnica) {
+        let rutField = document.getElementsByClassName("rut")[0]
+        rutField.style.outline = "3px solid red"
+        rutField.style.outlineOffset = "3px"
+
+        let passwordField = document.getElementById("pword")
+        passwordField.style.outline = "3px solid red"
+        passwordField.style.outlineOffset = "3px"
+
+        let continuar = document.getElementsByClassName("gob-btn-primary")[0]
+        continuar.style.outline = "3px solid red"
+        continuar.style.outlineOffset = "3px"
+    }
+    else if (currentView == ViewEnum.Dashboard) {
+        let descargar = document.getElementsByClassName("color-red")[0]
+        descargar.style.outline = "3px solid red"
+        descargar.style.outlineOffset = "3px"
+
+        descargar.scrollIntoView({behavior: "smooth"})
+    }
 }
 
-window.addEventListener("touchend", (e) => {
-    setTimeout(() => {
-        let view = currentView()
-        highlightElements(view)
-        CurrentViewChannel.postMessage(view)
-    }, 400)
-    
-    setTimeout(() => {
-        let view = currentView()
-        highlightElements(view)
-        CurrentViewChannel.postMessage(view)
-    }, 800)
-})
-
-// On load
-let view = currentView()
-highlightElements(view)
-CurrentViewChannel.postMessage(view)
+setInterval(() => {
+  let view = currentView()
+  highlightElements(view)
+  CurrentViewChannel.postMessage(view)
+}, 600)
 ''';
 
   @override
