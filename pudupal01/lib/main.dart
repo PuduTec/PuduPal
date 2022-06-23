@@ -238,7 +238,7 @@ setInterval(() => {
                     height: 90,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.blue[600],
                       boxShadow: <BoxShadow>[
                         BoxShadow(
                           offset: const Offset(0.0, -0.5),
@@ -247,7 +247,10 @@ setInterval(() => {
                         ),
                       ],
                     ),
-                    child: Text(instruction),
+                    child: Text(
+                      instruction,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
