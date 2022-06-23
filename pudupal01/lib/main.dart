@@ -71,32 +71,110 @@ class _DetailScreenState extends State<DetailScreen> {
   final controller = Completer<WebViewController>();
   var loadingPercentage = 0;
   final js = '''
+ViewEnum =  {
+    InicioSesion: "Inicio de sesión",
+    InicioSesionCarnet: "Inicio de sesión con carnet",
+    InicioSesionClaveUnica: "Inicio de sesión con Clave Única",
+    InicioSesionCorreo: "Inicio de sesión con correo",
+    NoSePuedeDeterminar: "No se pude determinar la vista :("
+}
+
 function currentView() {
     let url = window.location.host
     if (url === "mevacuno.gob.cl") {
         let popup_carnet = document.getElementsByClassName("popup-backdrop")[0]
         if (popup_carnet.classList.contains("backdrop-in")) {
-            return "Inicio de Sesión Carnet"
+            return ViewEnum.InicioSesionCarnet
         }
         else {
-            return "Hub Inicio de Sesión"
+            let active_tab = document.getElementsByClassName("toolbar-inner")[0].children[0]
+            if (active_tab.classList.contains("tab-link-active")) {
+                return ViewEnum.InicioSesion
+            }
+            else {
+                return ViewEnum.InicioSesionCorreo
+            }
         }
     }
     else if (url === "accounts.claveunica.gob.cl") {
-        return "Inicio de Sesión Clave Única"
+        return ViewEnum.InicioSesionClaveUnica
     }
     else {
-        return "No se pude determinar la vista :("
+        return ViewEnum.NoSePuedeDeterminar
     }
 }
 
-window.addEventListener("touchstart", (e) => {
+function getElementWithInnerHtml(list, inner) {
+    for (let elem of list) {
+        if (elem.innerHTML == inner) return elem
+    }
+    return undefined
+}
+
+function highlightElements(currentView) {
+    if (currentView === ViewEnum.InicioSesion) {
+        let claveUnica = document.getElementsByClassName("backbluex")[0]
+        claveUnica.style.outline = "3px solid red"
+        claveUnica.style.outlineOffset = "3px"
+
+        let carnet = getElementWithInnerHtml(document.getElementsByTagName("a"), "N° Serie Cédula Chilena")
+        carnet.style.outline = "3px solid red"
+        carnet.style.outlineOffset = "3px"
+
+        // let correo = getElementWithInnerHtml(document.getElementsByTagName("a"), "Correo electrónico")
+        // correo.style.borderBottom = "3px solid red"
+
+        // let claveUnicaTab = getElementWithInnerHtml(document.getElementsByTagName("a"), "Clave Única y/o C.I Chilena")
+        // claveUnicaTab.style.borderBottom = ""
+    }
+    else if (currentView === ViewEnum.InicioSesionCarnet) {
+        let acceder = getElementWithInnerHtml(document.getElementsByTagName("a"), "Acceder")
+        acceder.style.outline = "3px solid red"
+        acceder.style.outlineOffset = "3px"
+        
+        let input = document.getElementsByTagName("ul")[5]
+        input.style.outline = "3px solid red"
+        input.style.outlineOffset = "-3px"
+
+        let cerrar = document.getElementsByClassName("popup-close")[3]
+        console.dir(cerrar)
+        cerrar.style.borderBottom = "3px solid red"
+    }
+    else if (currentView === ViewEnum.InicioSesionCorreo) {
+        // let correo = getElementWithInnerHtml(document.getElementsByTagName("a"), "Correo electrónico")
+        // correo.style.borderBottom = ""
+
+        // let claveUnica = getElementWithInnerHtml(document.getElementsByTagName("a"), "Clave Única y/o C.I Chilena")
+        // claveUnica.style.borderBottom = "3px solid red"
+        
+        let acceder = getElementWithInnerHtml(document.getElementsByTagName("span"), "Acceder").parentElement
+        acceder.style.outline = "3px solid red"
+        acceder.style.outlineOffset = "3px"
+        
+        let input = document.getElementsByTagName("ul")[2]
+        input.style.outline = "3px solid red"
+        input.style.outlineOffset = "-5px"
+    }
+}
+
+window.addEventListener("touchend", (e) => {
     setTimeout(() => {
-        CurrentViewChannel.postMessage(currentView())
+        let view = currentView()
+        highlightElements(view)
+        CurrentViewChannel.postMessage(view)
     }, 400)
+    
+    setTimeout(() => {
+        let view = currentView()
+        highlightElements(view)
+        CurrentViewChannel.postMessage(view)
+    }, 800)
 })
 
-CurrentViewChannel.postMessage(currentView())
+// On load
+let view = currentView()
+highlightElements(view)
+CurrentViewChannel.postMessage(view)
 ''';
 
   @override
