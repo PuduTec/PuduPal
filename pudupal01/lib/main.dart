@@ -11,6 +11,7 @@ class Pagina {
 //Lista de Páginas Web para trámites
 
 List<Pagina> _paginas = [
+  const Pagina("Servipag", "https://portal.servipag.com/paymentexpress"),
   const Pagina("Pase Movilidad", "https://mevacuno.gob.cl/"),
   const Pagina("Certificados Registro Civil",
       "https://www.registrocivil.cl/principal/servicios-en-linea"),
@@ -77,7 +78,11 @@ ViewEnum =  {
     InicioSesionClaveUnica: "Inicio de sesión con Clave Única",
     InicioSesionCorreo: "Inicio de sesión con correo",
     Dashboard: "Descarga de pase movilidad",
-    NoSePuedeDeterminar: "No se pude determinar la vista :("
+    NoSePuedeDeterminar: "No se pude determinar la vista :(",
+    ServipagInit: "Bienvenido a Servipag!",
+    ServipagMethod1: "Ingrese sus datos",
+    ServipagMethod2: "Seleccione el medio de pago"
+    
 }
 
 function currentView() {
@@ -105,6 +110,18 @@ function currentView() {
     }
     else if (url === "accounts.claveunica.gob.cl") {
         return ViewEnum.InicioSesionClaveUnica
+    }
+    else if (url === "portal.servipag.com") {
+        let path = window.location.pathname
+        if (path === "/paymentmethod"){
+            return ViewEnum.ServipagMethod1
+        }
+        else if (path === "/paymentmethod/step2"){
+            return ViewEnum.ServipagMethod2
+        } 
+        else{
+            return ViewEnum.ServipagInit
+        }
     }
     else {
         return ViewEnum.NoSePuedeDeterminar
@@ -182,6 +199,62 @@ function highlightElements(currentView) {
 
         descargar.scrollIntoView({behavior: "smooth"})
     }
+    else if (currentView == ViewEnum.ServipagInit){
+        let categoria = document.getElementsByClassName("card")
+        let empresa = document.getElementsByClassName("form-group")
+        
+        for(var i=0;i<categoria.length;++i){
+          categoria[i].style.outline = "3px solid red"
+          categoria[i].style.outlineOffset = "3px"
+        }
+        
+        for(var i=0;i<empresa.length;++i){
+          empresa[i].style.outline = "3px solid red"
+          empresa[i].style.outlineOffset = "3px"
+        }
+        
+        let flecha = document.getElementsByClassName("text-center")[0]
+        flecha.style.border = "3px solid red"
+        
+        if (document.getElementsByClassName("add-to-cart d-flex justify-content-center align-items-center").length != null){
+          let plus = document.getElementsByClassName("add-to-cart d-flex justify-content-center align-items-center")[0]
+          plus.style.border = "3px solid red"
+        }
+        
+        if (document.getElementsByClassName("add-to-cart d-flex justify-content-center align-items-center out").length != null){
+          let x = document.getElementsByClassName("add-to-cart d-flex justify-content-center align-items-center out")[0]
+          x.style.border = "3px solid red"
+        }
+        
+        let pagar = document.getElementsByClassName("btn btn-primary")[0]
+        
+        pagar.style.outline = "3px solid red"
+        pagar.style.outlineOffset = "3px"      
+    }
+    
+    //Vista Datos
+    else if (currentView == ViewEnum.ServipagMethod1){
+      
+      let datos = document.getElementsByClassName("h-100 w-100 | position-relative")
+      
+      for(var i=0;i<datos.length;++i){
+          datos[i].style.outline = "3px solid red"
+          datos[i].style.outlineOffset = "3px"
+        }
+      
+      let sgte = document.getElementsByClassName("btn btn-secondary cursor")[0]
+      sgte.style.outline = "3px solid red"
+      sgte.style.outlineOffset = "3px"
+    } 
+    else if (currentView == ViewEnum.ServipagMethod2){
+      let metodos = document.getElementsByClassName("clear type-pay h-100")
+      let metodopago= document.getElementById("paymentMethodList")
+      
+      for(var i=0;i<metodos.length;++i){
+          metodos[i].style.outline = "3px solid red"
+          metodos[i].style.outlineOffset = "3px"
+      }
+    }
 }
 
 setInterval(() => {
@@ -202,7 +275,7 @@ setInterval(() => {
             ),
             body: Stack(
               children: [
-                Expanded(
+                Positioned.fill(
                   child: WebView(
                     initialUrl: widget.pagina.url,
                     javascriptMode: JavascriptMode.unrestricted,
@@ -231,11 +304,11 @@ setInterval(() => {
                     value: loadingPercentage / 100.0,
                   ),
                 Positioned(
-                  bottom: 0.0,
+                  top: 0.0,
                   left: 0.0,
                   right: 0.0,
                   child: Container(
-                    height: 90,
+                    height: 70,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: Colors.blue[600],
